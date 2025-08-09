@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      # 使用8080端口避免与其他服务冲突，可根据需要修改
+      - "8080:80"
+    restart: unless-stopped
+    container_name: whoami-web
+    networks:
+      - whoami-network
+    
+    # 可选：如果需要挂载自定义nginx配置
+    # volumes:
+    #   - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# 自定义网络避免与其他容器冲突
+networks:
+  whoami-network:
+    driver: bridge
+    name: whoami-network
